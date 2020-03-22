@@ -119,6 +119,10 @@ USER_AGENTS = [
 #使用scrapy_redis的去重方式
 # DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
 # DUPEFILTER_CLASS = "yunqiCrawl.bloomFilterOnRedis.bloomRedisFilter.bloomRedisFilter"
+# 去重过滤器
+DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
+# 使用Splash的Http缓存
+HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
 #REDIS_HOST = '127.0.0.1'
 #REDIS_PORT = 6379
 # 去重队列的信息
@@ -131,9 +135,15 @@ USER_AGENTS = [
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
 	'wyCrawl.middlewares.RandomUserAgent.RandomUserAgent': 543,
-    'wyCrawl.middlewares.SeleniumMiddleware.SeleniumMiddleware':600,
+    #'wyCrawl.middlewares.SeleniumMiddleware.SeleniumMiddleware':600,
+    'scrapy_splash.SplashCookiesMiddleware': 723,
+    'scrapy_splash.SplashMiddleware': 725,
+    'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
 }
-
+#支持cache_args（可选）
+SPIDER_MIDDLEWARES = {
+        'scrapy_splash.SplashDeduplicateArgsMiddleware': 100,
+}
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
 #EXTENSIONS = {
@@ -169,10 +179,13 @@ AUTOTHROTTLE_MAX_DELAY = 60
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 #将log日志信息保存在本地文件
-LOG_FILE = 'logfile.log'
+#LOG_FILE = 'logfile.log'
 LOG_LEVEL = 'DEBUG'
 
 #MONGO_URI = 'mongodb://localhost:27017,127.0.0.1:27018,127.0.0.1:27019'
 MONGO_URI = 'mongodb://localhost:27017'
 MONGO_DB = "ticketInfo"
 REPLICASET = 'reset'
+
+# 渲染服务的url
+SPLASH_URL = 'http://192.0.0.1:8050'
